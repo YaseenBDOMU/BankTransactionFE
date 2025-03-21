@@ -1,0 +1,100 @@
+<div class="dashboard-container">
+      <h1 class="title">Transaction Monitoring Dashboard</h1>
+      <div class="datetime">{{ today | date: 'full' }}</div>
+    
+      <div class="stats-container">
+        <mat-card class="stat-card alerts">
+          <mat-card-header>
+            <mat-card-title class="stat-title">Alerts</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="stat-value">{{ alertStats.total }}</div>
+            <div class="stat-details">
+              <div>New: {{ alertStats.new }}</div>
+              <div>In Progress: {{ alertStats.inProgress }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stat-card risk-levels">
+          <mat-card-header>
+            <mat-card-title class="stat-title">Risk Levels</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="stat-details">
+              <div class="high-risk">High: {{ riskLevels.high }}</div>
+              <div class="medium-risk">Medium: {{ riskLevels.medium }}</div>
+              <div class="low-risk">Low: {{ riskLevels.low }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+        <mat-card class="stat-card system-status">
+          <mat-card-header>
+            <mat-card-title class="stat-title">
+              System Status
+              <span class="status-highlight">Active</span>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="stat-details">
+              <div>Last Batch: {{ lastBatchRun | date: 'short' }}</div>
+              <div>Next Batch: {{ nextBatchRun | date: 'short' }}</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+        
+      </div>
+      
+      
+    
+    <div class="main-content">
+      <div class="alerts-panel">
+        <div class="panel-header">
+          <h2>Recent Alerts</h2>
+          <button routerLink="/alerts">View All</button>
+        </div>
+        
+        <div class="alert-list">
+          <div *ngFor="let alert of alerts.slice(0, 5)" class="alert-item" [ngClass]="alert.severity.toLowerCase()">
+            <div class="alert-code">{{ alert.alertCode }}</div>
+            <div class="alert-desc">{{ alert.description }}</div>
+            <div class="alert-info">
+              <span class="alert-severity">{{ alert.severity }}</span>
+              <span class="alert-date">{{ alert.createdDate | date }}</span>
+            </div>
+            <div class="alert-status">{{ alert.status }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="transactions-panel">
+        <div class="panel-header">
+          <h2>Recent Transactions</h2>
+          <button routerLink="/transactions">View All</button>
+        </div>
+        
+        <div class="transaction-list">
+          <div *ngFor="let transaction of recentTransactions" class="transaction-item" 
+               [ngClass]="{'flagged': transaction.flags && transaction.flags.length > 0}">
+            <div class="transaction-amount">{{ transaction.amount | currency:transaction.currency }}</div>
+            <div class="transaction-info">
+              <div>{{ transaction.transactionDate | date:'short' }}</div>
+              <div>{{ transaction.paymentType }}</div>
+            </div>
+            <div class="transaction-accounts">
+              <div>From: {{ transaction.senderAccount?.accountNumber || transaction.senderAccountId }}</div>
+              <div>To: {{ transaction.receiverAccount?.accountNumber || transaction.receiverAccountId }}</div>
+            </div>
+            <div *ngIf="transaction.flags && transaction.flags.length > 0" class="transaction-flags">
+              <span *ngFor="let flag of transaction.flags" class="flag" [ngClass]="flag.severity.toString()">
+
+                {{ flag.flagType }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -1,0 +1,97 @@
+<div class="alert-detail-container" *ngIf="!loading && alert">
+    <div class="header">
+      <div class="back-button">
+        <button routerLink="/alerts">Back to Alerts</button>
+      </div>
+      <h1>Alert: {{ alert.alertCode }}</h1>
+      <div class="status-badge" [ngClass]="alert.status.toLowerCase()">{{ alert.status }}</div>
+    </div>
+    
+    <div class="alert-summary">
+      <div class="alert-description">{{ alert.description }}</div>
+      <div class="alert-info">
+        <div class="info-item">
+          <span class="label">Severity:</span>
+          <span class="value" [ngClass]="alert.severity.toLowerCase()">{{ alert.severity }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Created:</span>
+          <span class="value">{{ alert.createdDate | date:'medium' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Pattern:</span>
+          <span class="value">{{ alert.detectionPattern }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Risk Score:</span>
+          <span class="value">{{ alert.riskScore }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Assigned To:</span>
+          <span class="value">{{ alert.assignedToUser?.fullName || 'Unassigned' }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="alert-actions">
+      <button *ngIf="alert.status === 'New'" (click)="updateStatus('InProgress')" class="primary">Start Investigation</button>
+      <button *ngIf="alert.status === 'InProgress'" (click)="updateStatus('Resolved')" class="success">Mark as Resolved</button>
+      <button *ngIf="alert.status === 'Resolved'" (click)="updateStatus('Closed')" class="info">Close Alert</button>
+      <button *ngIf="alert.status !== 'New'" (click)="updateStatus('New')" class="warning">Reset to New</button>
+      <button class="secondary">Generate Report</button>
+    </div>
+    
+    <div class="related-flags">
+      <h2>Related Flags</h2>
+      <div class="flags-list">
+        <div *ngFor="let flag of alert.relatedFlags" class="flag-item">
+          <div class="flag-header">
+            <span class="flag-type" [ngClass]="getSeverityClass(flag.severity.toString())">{{ flag.flagType }}</span>
+            <span class="flag-date">{{ flag.createdDate | date }}</span>
+          </div>
+          <div class="flag-description">{{ flag.description }}</div>
+          <div class="transaction-info" *ngIf="flag.transaction">
+            <div class="transaction-amount">{{ flag.transaction.amount | currency:flag.transaction.currency }}</div>
+            <div class="transaction-details">
+              <div>{{ flag.transaction.paymentType }} | {{ flag.transaction.transactionDate | date:'short' }}</div>
+              <div>From: {{ flag.transaction.senderAccountId }} → To: {{ flag.transaction.receiverAccountId }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="notes-section">
+      <h2>Case Notes</h2>
+      
+      <div class="add-note">
+        <form [formGroup]="noteForm" (ngSubmit)="addNote()">
+          <textarea formControlName="content" placeholder="Add a note..."></textarea>
+          <button type="submit" [disabled]="noteForm.invalid">Add Note</button>
+        </form>
+      </div>
+      
+      <div class="notes-list">
+        <div *ngFor="let note of alert.notes" class="note-item">
+          <div class="note-header">
+            <span class="note-author">{{ note.createdByUser?.fullName || 'System' }}</span>
+            <span class="note-date">{{ note.createdDate | date:'medium' }}</span>
+          </div>
+          <div class="note-content">{{ note.content }}</div>
+        </div>
+        
+        <div *ngIf="!alert.notes || alert.notes.length === 0" class="no-notes">
+          No notes added yet
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="loading" *ngIf="loading">
+    Loading alert details...
+  </div>
+  
+  <div class="error" *ngIf="error">
+    {{ error }}
+  </div>
+  
