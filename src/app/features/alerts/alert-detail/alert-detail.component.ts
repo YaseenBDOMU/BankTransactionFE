@@ -5,21 +5,26 @@ import { Alert } from '../../../core/models/alert.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 
 
 @Component({
   selector: 'app-alert-detail',
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule],
   templateUrl: './alert-detail.component.html',
   styleUrl: './alert-detail.component.scss'
 })
 
 export class AlertDetailComponent implements OnInit {
+  alertStatus: string = 'NEW';
+  dropdownVisible: boolean = false;
   alert: Alert | null = null;
+  today!: Date;
   loading = true;
   error = '';
   noteForm: FormGroup;
-  
+  noteInputVisible = false;
+
   constructor(
     private route: ActivatedRoute,
     private alertService: AlertService,
@@ -31,8 +36,14 @@ export class AlertDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.today = new Date();
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.loadAlert(id);
+    if (!isNaN(id)) {
+      this.loadAlert(id);
+    } else {
+      this.error = 'Invalid Alert ID';
+      this.loading = false;
+    }
   }
 
   loadAlert(id: number): void {
@@ -49,31 +60,16 @@ export class AlertDetailComponent implements OnInit {
       }
     );
   }
-
-  updateStatus(status: string): void {
-    if (!this.alert) return;
-    
-    this.alertService.updateAlertStatus(this.alert.id, status).subscribe(
-      () => {
-        if (this.alert) {
-          this.alert.status = status;
-        }
-      },
-      error => {
-        console.error('Error updating alert status:', error);
-      }
-    );
-  }
-
   addNote(): void {
     if (!this.alert || this.noteForm.invalid) return;
-    
+
     const content = this.noteForm.value.content;
     this.alertService.addNote(this.alert.id, content).subscribe(
       () => {
-        // Reload alert to get updated notes
         this.loadAlert(this.alert!.id);
-        this.noteForm.reset();
+        this.noteForm.statusChanges.subscribe(status => {
+          console.log('Form status:', status);
+        });
       },
       error => {
         console.error('Error adding note:', error);
@@ -85,5 +81,14 @@ export class AlertDetailComponent implements OnInit {
     if (!severity) return '';
     return severity.toLowerCase();
   }
-  
+
+  checkForm() {
+    console.log(this.noteForm.value);
+  }
+
+
+  toggleNoteInput(): void {
+    this.noteInputVisible = !this.noteInputVisible;
+  }
+
 }

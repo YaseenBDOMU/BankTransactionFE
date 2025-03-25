@@ -7,13 +7,24 @@ import { Transaction } from '../../core/models/transaction.model';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { Chart } from 'chart.js/auto';
+
+import { Router } from '@angular/router';
+import { TransactionFlagsService } from '../../core/services/transaction-flags.service';
+
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, MatCardModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatGridListModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrl: './dashboard.component.scss',
+  providers: [TransactionService]
 })
 export class DashboardComponent implements OnInit {
+  chart!: Chart;
   today!: Date;
   alerts: Alert[] = [];
   recentTransactions: Transaction[] = [];
@@ -29,18 +40,22 @@ export class DashboardComponent implements OnInit {
     medium: 0,
     low: 0
   };
-  lastBatchRun!: Date;  // Define lastBatchRun
-  nextBatchRun!: Date;  // Define nextBatchRun
+  lastBatchRun!: Date;  
+  nextBatchRun!: Date; 
 
   constructor(
+    private router: Router,
     private alertService: AlertService,
     private transactionService: TransactionService,
-    private signalrService: SignalrService
+    private signalrService: SignalrService,
+    private transactionFlagsService: TransactionFlagsService
   ) { }
 
   ngOnInit(): void {
     this.today = new Date();
     this.loadDashboardData();
+    // this.createChart();
+    this.loadTransactionData();
 
     // Start SignalR connection
     this.signalrService.startConnection().then(() => {
@@ -66,24 +81,21 @@ export class DashboardComponent implements OnInit {
   }
 
   loadDashboardData(): void {
-    // Load pending alerts
+
     this.alertService.getPendingAlerts().subscribe(alerts => {
       this.alerts = alerts;
-      
-      // Calculate alert statistics
+
       this.alertStats.total = alerts.length;
       this.alertStats.new = alerts.filter(a => a.status === 'New').length;
       this.alertStats.inProgress = alerts.filter(a => a.status === 'InProgress').length;
       this.alertStats.resolved = alerts.filter(a => a.status === 'Resolved').length;
       this.alertStats.closed = alerts.filter(a => a.status === 'Closed').length;
-      
-      // Calculate risk levels
+
       this.riskLevels.high = alerts.filter(a => a.severity === 'High' || a.severity === 'Very High').length;
       this.riskLevels.medium = alerts.filter(a => a.severity === 'Medium' || a.severity === 'Medium-High').length;
       this.riskLevels.low = alerts.filter(a => a.severity === 'Low').length;
     });
 
-    // Load recent transactions
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7);
@@ -92,5 +104,63 @@ export class DashboardComponent implements OnInit {
       this.recentTransactions = transactions.slice(0, 10); // Get last 10 transactions
     });
   }
+
+  goToAlerts() {
+    console.log("I am here");
+    this.router.navigate(['/alerts']);
+  }
+  goToTransactions() {
+    this.router.navigate(['/transactions']);
+  }
+
+  loadTransactionData(): void {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30); 
+    const endDate = new Date();
+
+    this.transactionService.getTransactionsForChart(startDate, endDate).subscribe(data => {
+      this.createChart(data);
+    });
+  }
+
+  createChart(data: { [key: string]: { suspicious: number, nonSuspicious: number } }): void {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    const labels = Object.keys(data);
+    const suspiciousData = labels.map(label => data[label].suspicious);
+    const nonSuspiciousData = labels.map(label => data[label].nonSuspicious);
+
+    this.chart = new Chart("barChart", {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Suspicious Transactions',
+            data: suspiciousData,
+            backgroundColor: 'red'
+          },
+          {
+            label: 'Non-Suspicious Transactions',
+            data: nonSuspiciousData,
+            backgroundColor: '#82ca9d'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+  
+  
 }
 

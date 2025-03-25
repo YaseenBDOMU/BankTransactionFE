@@ -11,11 +11,12 @@ import { FooterComponent } from './layout/footer/footer.component';
 import { LoginComponent } from "./auth/login/login.component";
 import { AlertDetailComponent } from "./features/alerts/alert-detail/alert-detail.component";
 import { DashboardComponent } from "./features/dashboard/dashboard.component";
+import { AllAlertsComponent } from "./features/all-alerts/all-alerts.component";
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, HeaderComponent, FooterComponent, SidenavComponent, LoginComponent, AlertDetailComponent, DashboardComponent],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

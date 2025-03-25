@@ -1,0 +1,188 @@
+.datetime {
+  text-align: right;
+  padding-right: 50px;
+  font-size: 1rem;
+  color: #555;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.container {
+  flex:1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 50px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.main-area {
+  width:100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.alert-transaction-container {
+  display: flex;
+  gap: 15px;
+}
+
+.alert-status,
+.notes {
+  flex: 1;
+  padding: 15px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-details {
+  width: 100%;
+  padding: 15px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.note-input {
+  margin-top: 10px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.notes-list {
+  margin-top: 10px;
+}
+
+.note-item {
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.no-notes {
+  text-align: center;
+  color: gray;
+  margin-top: 10px;
+}
+
+.status-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.status-container h3 {
+  margin: 0;
+}
+
+.status-container button {
+  margin-left: auto;
+}
+
+.alert-actions {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 0px;
+  width: auto;
+  min-width: 150px;
+  z-index: 100;
+  flex-direction: column;
+  text-align: left;
+}
+
+.alert-actions button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.alert-actions button:hover {
+  background: #f0f0f0;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.status{
+  color:green;
+}
+
+.flags-list {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 10px;
+  overflow-x: auto; 
+}
+
+.flag-item {
+  min-width: 250px; 
+  flex: 1;
+  padding: 10px;
+  margin-right:10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.flag-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.flag-description {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.transaction-info {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: #333;
+}
+

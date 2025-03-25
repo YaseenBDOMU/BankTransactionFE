@@ -30,7 +30,6 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) {
-    // Redirect to home if already logged in
     if (this.authService.currentUserValue) {
       this.router.navigate(['/']);
     }
@@ -41,7 +40,6 @@ export class LoginComponent implements OnInit {
     });
     
     this.returnUrl =  '/dashboard';
-    // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
   }
 
   ngOnInit(): void {}
