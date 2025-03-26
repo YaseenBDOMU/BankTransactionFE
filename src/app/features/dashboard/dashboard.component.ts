@@ -25,7 +25,7 @@ import { LottieComponent, AnimationOptions } from 'ngx-lottie';
 @Component({
   selector: 'app-dashboard',
   template: ` <ng-lottie [options]="options" (animationCreated)="animationCreated($event)" /> `,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatGridListModule, MatProgressSpinnerModule, LottieComponent],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatGridListModule, MatProgressSpinnerModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   providers: [TransactionService]
