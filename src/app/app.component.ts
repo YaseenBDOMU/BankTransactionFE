@@ -5,13 +5,6 @@ import { filter } from 'rxjs/operators';
 import { AuthService } from './core/services/auth.service';
 import { SignalrService } from './core/services/signalr.service';
 import { CommonModule } from '@angular/common';
-import { HeaderComponent } from './layout/header/header.component';
-import { SidenavComponent } from './layout/sidenav/sidenav.component';
-import { FooterComponent } from './layout/footer/footer.component';
-import { LoginComponent } from "./auth/login/login.component";
-import { AlertDetailComponent } from "./features/alerts/alert-detail/alert-detail.component";
-import { DashboardComponent } from "./features/dashboard/dashboard.component";
-import { AllAlertsComponent } from "./features/all-alerts/all-alerts.component";
 
 
 @Component({

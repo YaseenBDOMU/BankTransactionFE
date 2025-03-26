@@ -6,6 +6,12 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 
 import { provideHttpClient, withFetch } from '@angular/common/http';
 
+import { provideLottieOptions } from 'ngx-lottie';
+import player from 'lottie-web';
+
+
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideClientHydration(withEventReplay()), provideHttpClient(withFetch())]
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideClientHydration(withEventReplay()), provideHttpClient(withFetch()), provideLottieOptions({
+    player: () => player,
+  }),]
 };

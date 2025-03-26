@@ -9,6 +9,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-all-alerts',
@@ -17,12 +18,14 @@ import { Router } from '@angular/router';
     CommonModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './all-alerts.component.html',
   styleUrl: './all-alerts.component.scss'
 })
 export class AllAlertsComponent implements OnInit {
+  isLoading = true;
   displayedColumns: string[] = [
     'id', 'alertCode', 'createdDate', 'severity', 'status', 
     'description', 'assignedToUserId', 'detectionPattern', 'riskScore'
@@ -43,6 +46,7 @@ export class AllAlertsComponent implements OnInit {
 
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.isLoading=false;
     });
   }
 

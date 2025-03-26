@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-transaction-list',
@@ -21,12 +22,14 @@ import { MatButtonModule } from '@angular/material/button';
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './transaction-list.component.html',
   styleUrl: './transaction-list.component.scss'
 })
 export class TransactionListComponent implements OnInit {
+  isLoading = true;
   transactions: Transaction[] = [];
   dataSource = new MatTableDataSource<Transaction>();
   displayedColumns: string[] = ['transactionId', 'amount', 'paymentType', 'currency', 'date', 'flags'];
@@ -73,6 +76,7 @@ export class TransactionListComponent implements OnInit {
         this.dataSource.sort = this.sort;
         this.applyFilters();
         this.loading = false;
+        this.isLoading=false;
       },
       error => {
         this.error = 'Error loading transactions';

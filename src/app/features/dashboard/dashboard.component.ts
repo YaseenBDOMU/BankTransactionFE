@@ -15,15 +15,32 @@ import { Chart } from 'chart.js/auto';
 
 import { Router } from '@angular/router';
 import { TransactionFlagsService } from '../../core/services/transaction-flags.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AfterViewInit } from '@angular/core';
+
+import { AnimationItem } from 'lottie-web';
+import { LottieComponent, AnimationOptions } from 'ngx-lottie';
+
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatGridListModule],
+  template: ` <ng-lottie [options]="options" (animationCreated)="animationCreated($event)" /> `,
+  imports: [CommonModule, MatCardModule, MatTableModule, MatButtonModule, MatIconModule, MatGridListModule, MatProgressSpinnerModule, LottieComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   providers: [TransactionService]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
+
+  options: AnimationOptions = {
+    path: 'assets/Animation - 1742975662208.json',
+  };
+
+  animationCreated(animationItem: AnimationItem): void {
+    console.log(animationItem);
+  }
+
+  isLoading = true;
   chart!: Chart;
   today!: Date;
   alerts: Alert[] = [];
@@ -40,21 +57,21 @@ export class DashboardComponent implements OnInit {
     medium: 0,
     low: 0
   };
-  lastBatchRun!: Date;  
-  nextBatchRun!: Date; 
+  lastBatchRun!: Date;
+  nextBatchRun!: Date;
 
   constructor(
     private router: Router,
     private alertService: AlertService,
     private transactionService: TransactionService,
     private signalrService: SignalrService,
-    private transactionFlagsService: TransactionFlagsService
+    private transactionFlagsService: TransactionFlagsService,
   ) { }
 
   ngOnInit(): void {
     this.today = new Date();
     this.loadDashboardData();
-    // this.createChart();
+    
     this.loadTransactionData();
 
     // Start SignalR connection
@@ -80,7 +97,15 @@ export class DashboardComponent implements OnInit {
     this.nextBatchRun.setMinutes(this.nextBatchRun.getMinutes() + 30); // Example: next batch run is 30 minutes later
   }
 
+  ngAfterViewInit(): void {
+    // Ensure the chart is only created after the view is fully initialized.
+    if (!this.isLoading && this.recentTransactions.length > 0) {
+      this.loadTransactionData();
+    }
+  }
+
   loadDashboardData(): void {
+    this.isLoading = true;
 
     this.alertService.getPendingAlerts().subscribe(alerts => {
       this.alerts = alerts;
@@ -94,6 +119,8 @@ export class DashboardComponent implements OnInit {
       this.riskLevels.high = alerts.filter(a => a.severity === 'High' || a.severity === 'Very High').length;
       this.riskLevels.medium = alerts.filter(a => a.severity === 'Medium' || a.severity === 'Medium-High').length;
       this.riskLevels.low = alerts.filter(a => a.severity === 'Low').length;
+
+      this.isLoading = false;
     });
 
     const endDate = new Date();
@@ -102,6 +129,7 @@ export class DashboardComponent implements OnInit {
 
     this.transactionService.getTransactions(startDate, endDate).subscribe(transactions => {
       this.recentTransactions = transactions.slice(0, 10); // Get last 10 transactions
+      this.isLoading = false;
     });
   }
 
@@ -115,13 +143,24 @@ export class DashboardComponent implements OnInit {
 
   loadTransactionData(): void {
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30); 
+    startDate.setDate(startDate.getDate() - 30);
     const endDate = new Date();
-
+  
     this.transactionService.getTransactionsForChart(startDate, endDate).subscribe(data => {
-      this.createChart(data);
+      console.log("Data fetched for chart:", data); 
+      if (data) {
+        this.createChart(data);
+        this.isLoading = false;
+      } else {
+        this.isLoading = false;
+        console.error('No data for chart');
+      }
+    }, error => {
+      console.error("Error fetching transaction data", error);
+      this.isLoading = false;
     });
   }
+  
 
   createChart(data: { [key: string]: { suspicious: number, nonSuspicious: number } }): void {
     if (this.chart) {
@@ -160,7 +199,13 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
-  
-  
+
+  ngOnDestroy(): void {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+
+
 }
 
